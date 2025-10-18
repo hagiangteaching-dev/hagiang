@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>听力练习 - 水果买卖</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background: linear-gradient(#f9f9f9, #e0f7fa);
+      margin: 20px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #00695c;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      margin: 20px 0;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+    .options label {
+      display: block;
+      margin: 5px 0;
+    }
+    button {
+      margin: 10px 10px 0 0;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #26a69a;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #00897b;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #d32f2f;
+    }
+    .answers {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f1f8e9;
+      border-radius: 6px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>听力练习 - 水果买卖</h1>
+    <p>请先听录音，然后回答问题：</p>
+    <audio controls>
+      <source src="水果买卖.wav" type="audio/wav">
+      您的浏览器不支持音频播放。
+    </audio>
+
+    <form id="quiz">
+      <div class="question">
+        <p>1. 顾客一开始想买什么水果？</p>
+        <div class="options">
+          <label><input type="radio" name="q1" value="A"> 香蕉</label>
+          <label><input type="radio" name="q1" value="B"> 苹果</label>
+          <label><input type="radio" name="q1" value="C"> 西瓜</label>
+          <label><input type="radio" name="q1" value="D"> 梨</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <p>2. 老板说苹果多少钱一斤？</p>
+        <div class="options">
+          <label><input type="radio" name="q2" value="A"> 三块</label>
+          <label><input type="radio" name="q2" value="B"> 三块五</label>
+          <label><input type="radio" name="q2" value="C"> 四块</label>
+          <label><input type="radio" name="q2" value="D"> 五块</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <p>3. 顾客要买几斤苹果？</p>
+        <div class="options">
+          <label><input type="radio" name="q3" value="A"> 一斤</label>
+          <label><input type="radio" name="q3" value="B"> 两斤</label>
+          <label><input type="radio" name="q3" value="C"> 三斤</label>
+          <label><input type="radio" name="q3" value="D"> 四斤</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <p>4. 老板说两斤苹果一共多少钱？</p>
+        <div class="options">
+          <label><input type="radio" name="q4" value="A"> 六块五</label>
+          <label><input type="radio" name="q4" value="B"> 七块</label>
+          <label><input type="radio" name="q4" value="C"> 七块五</label>
+          <label><input type="radio" name="q4" value="D"> 八块</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <p>5. 顾客后来又买了什么？</p>
+        <div class="options">
+          <label><input type="radio" name="q5" value="A"> 西瓜</label>
+          <label><input type="radio" name="q5" value="B"> 香蕉</label>
+          <label><input type="radio" name="q5" value="C"> 梨</label>
+          <label><input type="radio" name="q5" value="D"> 葡萄</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <p>6. 顾客最后给了多少钱？</p>
+        <div class="options">
+          <label><input type="radio" name="q6" value="A"> 十四块</label>
+          <label><input type="radio" name="q6" value="B"> 十四块三毛</label>
+          <label><input type="radio" name="q6" value="C"> 十五块</label>
+          <label><input type="radio" name="q6" value="D"> 十六块</label>
+        </div>
+      </div>
+
+      <button type="button" onclick="submitQuiz()">提交答案</button>
+      <button type="button" onclick="showAnswers()">显示正确答案</button>
+    </form>
+
+    <div id="result" class="result"></div>
+    <div id="answers" class="answers"></div>
+  </div>
+
+  <script>
+    const correctAnswers = {
+      q1: "B",
+      q2: "B",
+      q3: "B",
+      q4: "B",
+      q5: "B",
+      q6: "C"
+    };
+
+    function submitQuiz() {
+      let score = 0;
+      const form = document.forms["quiz"];
+      for (let key in correctAnswers) {
+        const userAnswer = form[key].value;
+        if (userAnswer === correctAnswers[key]) {
+          score++;
+        }
+      }
+      document.getElementById("result").innerText = "你的得分是：" + score + " / 6";
+    }
+
+    function showAnswers() {
+      let text = "<h3>正确答案：</h3>";
+      text += "1. B 苹果<br>";
+      text += "2. B 三块五<br>";
+      text += "3. B 两斤<br>";
+      text += "4. B 七块<br>";
+      text += "5. B 香蕉<br>";
+      text += "6. C 十五块<br>";
+      const ansDiv = document.getElementById("answers");
+      ansDiv.innerHTML = text;
+      ansDiv.style.display = "block";
+    }
+  </script>
+</body>
+</html>
