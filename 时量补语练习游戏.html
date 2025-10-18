@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时量补语练习游戏</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft YaHei", "SimHei", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .rules-card h2, .grammar-card h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .rules-card ol {
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+
+        .rules-card li {
+            margin-bottom: 10px;
+        }
+
+        .grammar-card ul {
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+
+        .grammar-card li {
+            margin-bottom: 8px;
+        }
+
+        .example {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .original-sentence {
+            background: #f1f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+        }
+
+        .unit-hint {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .submit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+        }
+
+        .reference-btn {
+            background: #95a5a6;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .reference-btn.active {
+            background: #2ecc71;
+            cursor: pointer;
+        }
+
+        .reference-btn.active:hover {
+            background: #27ae60;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .reference-answer {
+            margin-top: 15px;
+            padding: 12px;
+            background: #fff3cd;
+            border-radius: 8px;
+            color: #856404;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .start-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 30px;
+            background: #e74c3c;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .start-btn:hover {
+            background: #c0392b;
+        }
+
+        .grammar-structure {
+            font-weight: bold;
+            color: #e74c3c;
+            text-transform: uppercase;
+        }
+
+        .rules-highlight {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>时量补语练习游戏</h1>
+        </header>
+
+        <section class="card rules-card">
+            <h2>游戏规则</h2>
+            <ol>
+                <li>游戏共有6道题目，需要按顺序完成</li>
+                <li>每道题会给出原句和时间单位提示</li>
+                <li>你需要使用<strong>时量补语</strong>重写句子</li>
+                <li>重写的句子必须包含<strong>对应的时间单位</strong></li>
+                <li>完成句子后点击"检查答案"按钮</li>
+                <li>如果答案正确，会显示"正确✔"；如果错误，会显示"错误❌"</li>
+                <li>检查答案后，可以点击"参考答案"查看标准答案和使用的语法结构</li>
+            </ol>
+            <div class="rules-highlight">
+                <strong>提示：</strong>请确保你已经理解了下面的时量补语语法结构，然后再开始游戏！
+            </div>
+        </section>
+
+        <section class="card grammar-card" id="grammar-section">
+            <h2>「时量补语」说明</h2>
+            <p>表示动作持续的时间。</p>
+            <p>常见结构有：</p>
+            <ul>
+                <li><span class="grammar-structure">S + V + （了） + 时量补语</span>。例如：他睡了八个小时。</li>
+                <li><span class="grammar-structure">S + V + O + V + （了） + 时量补语</span>。例如：他睡觉睡了八个小时。</li>
+                <li><span class="grammar-structure">S + V +（了）+ 时量补语 + （的） + O</span>。例如：他睡了八个小时（的）觉。</li>
+            </ul>
+            <p>请仔细阅读以上语法结构，然后点击下方按钮开始游戏。</p>
+            <button class="start-btn" onclick="startGame()">我已阅读完毕，开始游戏</button>
+        </section>
+
+        <section class="questions" id="questions-section" style="display:none;">
+            <!-- 第1题 -->
+            <div class="card question" id="q1">
+                <h3>第1题</h3>
+                <div class="original-sentence">原句：他8点开始看电视，8点半去睡觉。</div>
+                <div class="unit-hint">时间单位提示：分钟</div>
+                <div class="input-group">
+                    <input type="text" placeholder="请输入重写后的句子...">
+                </div>
+                <div class="buttons">
+                    <button class="submit-btn" onclick="checkAnswer(1)">检查答案</button>
+                    <button class="reference-btn" id="refBtn1" onclick="showReference(1)">参考答案</button>
+                </div>
+                <div class="feedback" id="feedback1"></div>
+                <div class="reference-answer" id="reference1"></div>
+            </div>
+
+            <!-- 第2题 -->
+            <div class="card question" id="q2">
+                <h3>第2题</h3>
+                <div class="original-sentence">原句：他中午12点睡觉，中午1点起床。</div>
+                <div class="unit-hint">时间单位提示：小时</div>
+                <div class="input-group">
+                    <input type="text" placeholder="请输入重写后的句子...">
+                </div>
+                <div class="buttons">
+                    <button class="submit-btn" onclick="checkAnswer(2)">检查答案</button>
+                    <button class="reference-btn" id="refBtn2" onclick="showReference(2)">参考答案</button>
+                </div>
+                <div class="feedback" id="feedback2"></div>
+                <div class="reference-answer" id="reference2"></div>
+            </div>
+
+            <!-- 第3题 -->
+            <div class="card question" id="q3">
+                <h3>第3题</h3>
+                <div class="original-sentence">原句：他星期五去上海旅游，星期一回来。</div>
+                <div class="unit-hint">时间单位提示：天</div>
+                <div class="input-group">
+                    <input type="text" placeholder="请输入重写后的句子...">
+                </div>
+                <div class="buttons">
+                    <button class="submit-btn" onclick="checkAnswer(3)">检查答案</button>
+                    <button class="reference-btn" id="refBtn3" onclick="showReference(3)">参考答案</button>
+                </div>
+                <div class="feedback" id="feedback3"></div>
+                <div class="reference-answer" id="reference3"></div>
+            </div>
+
+            <!-- 第4题 -->
+            <div class="card question" id="q4">
+                <h3>第4题</h3>
+                <div class="original-sentence">原句：我上星期一请假，这星期一回学校了。</div>
+                <div class="unit-hint">时间单位提示：星期</div>
+                <div class="input-group">
+                    <input type="text" placeholder="请输入重写后的句子...">
+                </div>
+                <div class="buttons">
+                    <button class="submit-btn" onclick="checkAnswer(4)">检查答案</button>
+                    <button class="reference-btn" id="refBtn4" onclick="showReference(4)">参考答案</button>
+                </div>
+                <div class="feedback" id="feedback4"></div>
+                <div class="reference-answer" id="reference4"></div>
+            </div>
+
+            <!-- 第5题 -->
+            <div class="card question" id="q5">
+                <h3>第5题</h3>
+                <div class="original-sentence">原句：她今年1月学汉语，现在是6月。</div>
+                <div class="unit-hint">时间单位提示：月</div>
+                <div class="input-group">
+                    <input type="text" placeholder="请输入重写后的句子...">
+                </div>
+                <div class="buttons">
+                    <button class="submit-btn" onclick="checkAnswer(5)">检查答案</button>
+                    <button class="reference-btn" id="refBtn5" onclick="showReference(5)">参考答案</button>
+                </div>
+                <div class="feedback" id="feedback5"></div>
+                <div class="reference-answer" id="reference5"></div>
+            </div>
+
+            <!-- 第6题 -->
+            <div class="card question" id="q6">
+                <h3>第6题</h3>
+                <div class="original-sentence">原句：她2010年去中国留学，2020年回国。</div>
+                <div class="unit-hint">时间单位提示：年</div>
+                <div class="input-group">
+                    <input type="text" placeholder="请输入重写后的句子...">
+                </div>
+                <div class="buttons">
+                    <button class="submit-btn" onclick="checkAnswer(6)">检查答案</button>
+                    <button class="reference-btn" id="refBtn6" onclick="showReference(6)">参考答案</button>
+                </div>
+                <div class="feedback" id="feedback6"></div>
+                <div class="reference-answer" id="reference6"></div>
+            </div>
+        </section>
+
+        <footer>
+            <p>多练几次，你一定能掌握时量补语的表达方式！</p>
+        </footer>
+    </div>
+
+    <script>
+        // 参考答案数据
+        const referenceAnswers = {
+            1: { answer: "他看了30分钟电视。", structure: "S + V + 了 + 时量补语 + O" },
+            2: { answer: "他睡了1个小时。", structure: "S + V + 了 + 时量补语" },
+            3: { answer: "他去上海旅游4天。", structure: "S + V + O + 时量补语" },
+            4: { answer: "我请一星期假。", structure: "S + V + 时量补语 + O" },
+            5: { answer: "她学汉语学了6个月。", structure: "S + V + O + V + 了 + 时量补语" },
+            6: { answer: "她去中国留学了10年。", structure: "S + V + O + V + 了 + 时量补语" }
+        };
+
+        // 开始游戏函数
+        function startGame() {
+            document.getElementById('grammar-section').style.display = 'none';
+            document.getElementById('questions-section').style.display = 'block';
+        }
+
+        // 检查答案的函数
+        function checkAnswer(questionNum) {
+            const input = document.querySelector(`#q${questionNum} input`);
+            const feedback = document.getElementById(`feedback${questionNum}`);
+            const refBtn = document.getElementById(`refBtn${questionNum}`);
+            const answer = input.value.trim();
+            
+            // 隐藏之前的反馈
+            feedback.style.display = 'none';
+            
+            // 检查答案是否为空
+            if (!answer) {
+                feedback.textContent = "❌ 请输入答案";
+                feedback.className = "feedback incorrect";
+                feedback.style.display = 'block';
+                return;
+            }
+            
+            // 检查是否包含"了"和对应的时间单位
+            const timeUnits = {
+                1: "分钟",
+                2: "小时",
+                3: "天",
+                4: "星期",
+                5: "月",
+                6: "年"
+            };
+            
+            const requiredUnit = timeUnits[questionNum];
+            
+            if (answer.includes("了") && answer.includes(requiredUnit)) {
+                feedback.textContent = "✔ 正确";
+                feedback.className = "feedback correct";
+            } else {
+                feedback.textContent = "❌ 错误";
+                feedback.className = "feedback incorrect";
+            }
+            
+            feedback.style.display = 'block';
+            
+            // 激活参考答案按钮
+            refBtn.classList.add('active');
+        }
+        
+        // 显示参考答案的函数
+        function showReference(questionNum) {
+            const refBtn = document.getElementById(`refBtn${questionNum}`);
+            const reference = document.getElementById(`reference${questionNum}`);
+            
+            // 只有在参考答案按钮激活时才能查看
+            if (refBtn.classList.contains('active')) {
+                const refData = referenceAnswers[questionNum];
+                reference.innerHTML = `参考答案：${refData.answer}<br>已使用的结构：${refData.structure}`;
+                reference.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
