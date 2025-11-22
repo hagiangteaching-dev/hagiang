@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉语拼音点泡泡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Comic Sans MS", "楷体", "微软雅黑", sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffd6e7 0%, #c2f0fc 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 150, 200, 0.3);
+            padding: 25px;
+            position: relative;
+            border: 5px solid #ffb6c1;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23FFD1DC" stroke="%23FFB6C1" stroke-width="3"/></svg>');
+            background-size: contain;
+            z-index: 0;
+        }
+        
+        .container::after {
+            content: "";
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 120px;
+            height: 120px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23C2F0FC" stroke="%2391D1E5" stroke-width="3"/></svg>');
+            background-size: contain;
+            z-index: 0;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px dotted #ff9ac8;
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            color: #ff6b9d;
+            background: linear-gradient(45deg, #ff6b9d, #ff9ac8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "✨";
+            position: absolute;
+            top: -10px;
+            right: -30px;
+            font-size: 2rem;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(45deg, #ffd1dc, #c2f0fc);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            box-shadow: 0 5px 15px rgba(255, 150, 200, 0.2);
+            position: relative;
+            z-index: 1;
+            border: 3px solid #ffb6c1;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 5px 15px;
+        }
+        
+        .info-label {
+            font-size: 1rem;
+            color: #ff6b9d;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #5a8ee0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #ff9ac8, #ff6b9d);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.6);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: linear-gradient(45deg, #e0e0e0, #b0b0b0);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .voice-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: linear-gradient(45deg, #d4fc79, #96e6a1);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+            border: 3px solid #a8e6a8;
+        }
+        
+        select, input[type="range"] {
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #ffb6c1;
+            background: white;
+            font-size: 1rem;
+        }
+        
+        .bubble-container {
+            position: relative;
+            width: 100%;
+            height: 550px;
+            border: 3px dashed #ff9ac8;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            background: linear-gradient(45deg, #e0f7fa, #bbdefb);
+            box-shadow: inset 0 0 20px rgba(255, 150, 200, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .bubble {
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #5a5a5a;
+            text-align: center;
+            transition: transform 0.2s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            /* 透明泡泡效果 */
+            background: rgba(255, 255, 255, 0.8);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+        }
+        
+        .bubble::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+        }
+        
+        .bubble.hidden {
+            opacity: 0.3;
+            filter: blur(3px);
+        }
+        
+        .bubble.correct {
+            background: rgba(166, 226, 166, 0.8);
+            border: 3px solid rgba(120, 200, 120, 0.9);
+            animation: correct 0.5s ease-in-out;
+        }
+        
+        .bubble.incorrect {
+            background: rgba(255, 173, 173, 0.8);
+            border: 3px solid rgba(255, 120, 120, 0.9);
+            animation: incorrect 0.5s ease-in-out;
+        }
+        
+        .bubble.normal {
+            background: rgba(255, 255, 255, 0.8);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+        }
+        
+        @keyframes correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes incorrect {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-15px); }
+            50% { transform: translateX(15px); }
+            75% { transform: translateX(-15px); }
+            100% { transform: translateX(0); }
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(var(--x-movement), var(--y-movement-quarter));
+            }
+            50% {
+                transform: translate(calc(var(--x-movement) * 1.5), var(--y-movement-half));
+            }
+            75% {
+                transform: translate(var(--x-movement), var(--y-movement-three-quarters));
+            }
+            100% {
+                transform: translate(0, var(--y-movement));
+            }
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+            border: 2px solid #ffb6c1;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(45deg, #a8e6a8, #6bc46b);
+            width: 100%;
+            transition: width 0.1s linear;
+            border-radius: 10px;
+        }
+        
+        .instructions {
+            background: linear-gradient(45deg, #ffd1dc, #c2f0fc);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            box-shadow: 0 5px 15px rgba(255, 150, 200, 0.2);
+            position: relative;
+            z-index: 1;
+            border: 3px solid #ffb6c1;
+        }
+        
+        .instructions h3 {
+            color: #ff6b9d;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 25px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 5px solid #ffb6c1;
+            position: relative;
+        }
+        
+        .modal-content::before {
+            content: "🎉";
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            background: white;
+            padding: 10px;
+            border-radius: 50%;
+            border: 3px solid #ffb6c1;
+        }
+        
+        .modal h2 {
+            color: #ff6b9d;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+        
+        .result-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+        
+        .result-item.correct {
+            background: #e8f5e9;
+        }
+        
+        .result-item.incorrect {
+            background: #ffebee;
+        }
+        
+        .correct-answer {
+            color: #4caf50;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .welcome-page {
+            text-align: center;
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .welcome-page h2 {
+            color: #ff6b9d;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        
+        .welcome-page p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .demo-section {
+            background: linear-gradient(45deg, #ffd1dc, #c2f0fc);
+            padding: 20px;
+            border-radius: 20px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(255, 150, 200, 0.2);
+            border: 3px solid #ffb6c1;
+        }
+        
+        .demo-section h3 {
+            color: #ff6b9d;
+            margin-bottom: 15px;
+        }
+        
+        .demo-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .demo-word {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 2px solid #ffb6c1;
+        }
+        
+        .demo-word:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: #fff0f5;
+        }
+        
+        .pause-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .game-info {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .info-item {
+                margin: 10px 0;
+            }
+            
+            .bubble-container {
+                height: 450px;
+            }
+            
+            .bubble {
+                width: 110px;
+                height: 110px;
+                font-size: 1.3rem;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 欢迎页面 -->
+    <div class="container" id="welcome-page">
+        <header>
+            <h1>汉语拼音点泡泡</h1>
+            <p>欢迎来到可爱的拼音学习游戏！🎈</p>
+        </header>
+        
+        <div class="welcome-page">
+            <h2>欢迎挑战拼音泡泡游戏！</h2>
+            <p>这是一个有趣的汉语拼音学习游戏，通过听音辨词来提高您的拼音识别能力。</p>
+            
+            <div class="instructions">
+                <h3>游戏规则</h3>
+                <p>1. 系统会播放两次词语的发音</p>
+                <p>2. 在10秒内点击正确的拼音泡泡</p>
+                <p>3. 单音节词语的泡泡都是单音节拼音，双音节词语的泡泡都是双音节拼音</p>
+                <p>4. 游戏共10轮，每答对一题得10分</p>
+                <p>5. 可以随时暂停游戏</p>
+                <p>6. 游戏结束后可以查看成绩和正确答案</p>
+            </div>
+            
+            <div class="demo-section">
+                <h3>语音试听</h3>
+                <p>请选择您喜欢的语音并调整语速，然后点击下方词语试听：</p>
+                
+                <div class="voice-controls">
+                    <label for="welcome-voice-select">选择语音：</label>
+                    <select id="welcome-voice-select">
+                        <option value="">正在加载语音...</option>
+                    </select>
+                    
+                    <label for="welcome-rate-control">语速：</label>
+                    <input type="range" id="welcome-rate-control" min="0.5" max="2" step="0.1" value="1">
+                    <span id="welcome-rate-value">1.0</span>
+                    
+                    <label for="welcome-volume-control">音量：</label>
+                    <input type="range" id="welcome-volume-control" min="0" max="1" step="0.1" value="1">
+                    <span id="welcome-volume-value">1.0</span>
+                </div>
+                
+                <div class="demo-words">
+                    <div class="demo-word" data-word="你好">你好</div>
+                    <div class="demo-word" data-word="谢谢">谢谢</div>
+                    <div class="demo-word" data-word="老师">老师</div>
+                    <div class="demo-word" data-word="学生">学生</div>
+                    <div class="demo-word" data-word="中国">中国</div>
+                </div>
+            </div>
+            
+            <button id="start-game-btn">开始游戏 🎮</button>
+        </div>
+    </div>
+    
+    <!-- 游戏页面 -->
+    <div class="container" id="game-page" style="display: none;">
+        <header>
+            <h1>汉语拼音点泡泡</h1>
+            <p>听词语发音，点击正确的拼音泡泡！每轮10秒，共10轮，每题10分。</p>
+        </header>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <span class="info-label">当前轮数</span>
+                <span class="info-value" id="round-display">0/10</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">当前得分</span>
+                <span class="info-value" id="score-display">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">剩余时间</span>
+                <span class="info-value" id="timer-display">10秒</span>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="time-progress"></div>
+        </div>
+        
+        <div class="controls">
+            <button id="pause-btn">暂停游戏 ⏸️</button>
+            <button id="play-btn">播放发音 🔊</button>
+            <button id="restart-game-btn">重新开始 🔄</button>
+        </div>
+        
+        <div class="bubble-container" id="bubble-container">
+            <!-- 泡泡将通过JS动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 游戏结束模态框 -->
+    <div class="modal" id="game-over-modal">
+        <div class="modal-content">
+            <h2>游戏结束</h2>
+            <p>你的得分：<span id="final-score">0</span> / 100</p>
+            <div id="results-list">
+                <!-- 结果将通过JS动态生成 -->
+            </div>
+            <div class="controls" style="margin-top: 20px;">
+                <button id="restart-btn">再来一局 🎯</button>
+                <button id="back-to-welcome">返回首页 🏠</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏参数配置
+        const TOTAL_ROUNDS = 10;
+        const TIME_PER_ROUND = 10;
+        const POINTS_PER_CORRECT = 10;
+        const MIN_BUBBLE_COUNT = 3;
+        const MAX_BUBBLE_COUNT = 4;
+        const BUBBLE_MIN_DURATION = 3;
+        const BUBBLE_MAX_DURATION = 6;
+
+        // HSK1级词汇库
+        const wordLibrary = [
+            {chinese: "我", pinyin: "wǒ", audio: ""},
+            {chinese: "你", pinyin: "nǐ", audio: ""},
+            {chinese: "他", pinyin: "tā", audio: ""},
+            {chinese: "她", pinyin: "tā", audio: ""},
+            {chinese: "我们", pinyin: "wǒ men", audio: ""},
+            {chinese: "你们", pinyin: "nǐ men", audio: ""},
+            {chinese: "他们", pinyin: "tā men", audio: ""},
+            {chinese: "妈妈", pinyin: "mā ma", audio: ""},
+            {chinese: "爸爸", pinyin: "bà ba", audio: ""},
+            {chinese: "老师", pinyin: "lǎo shī", audio: ""},
+            {chinese: "学生", pinyin: "xué sheng", audio: ""},
+            {chinese: "一", pinyin: "yī", audio: ""},
+            {chinese: "二", pinyin: "èr", audio: ""},
+            {chinese: "三", pinyin: "sān", audio: ""},
+            {chinese: "四", pinyin: "sì", audio: ""},
+            {chinese: "五", pinyin: "wǔ", audio: ""},
+            {chinese: "六", pinyin: "liù", audio: ""},
+            {chinese: "七", pinyin: "qī", audio: ""},
+            {chinese: "八", pinyin: "bā", audio: ""},
+            {chinese: "九", pinyin: "jiǔ", audio: ""},
+            {chinese: "十", pinyin: "shí", audio: ""},
+            {chinese: "你好", pinyin: "nǐ hǎo", audio: ""},
+            {chinese: "谢谢", pinyin: "xiè xie", audio: ""},
+            {chinese: "不客气", pinyin: "bú kè qi", audio: ""},
+            {chinese: "对不起", pinyin: "duì bu qǐ", audio: ""},
+            {chinese: "没关系", pinyin: "méi guān xi", audio: ""},
+            {chinese: "再见", pinyin: "zài jiàn", audio: ""},
+            {chinese: "是", pinyin: "shì", audio: ""},
+            {chinese: "不是", pinyin: "bú shì", audio: ""},
+            {chinese: "好", pinyin: "hǎo", audio: ""},
+            {chinese: "不好", pinyin: "bù hǎo", audio: ""},
+            {chinese: "今天", pinyin: "jīn tiān", audio: ""},
+            {chinese: "明天", pinyin: "míng tiān", audio: ""},
+            {chinese: "昨天", pinyin: "zuó tiān", audio: ""},
+            {chinese: "现在", pinyin: "xiàn zài", audio: ""},
+            {chinese: "学校", pinyin: "xué xiào", audio: ""},
+            {chinese: "家", pinyin: "jiā", audio: ""},
+            {chinese: "中国", pinyin: "zhōng guó", audio: ""},
+            {chinese: "北京", pinyin: "běi jīng", audio: ""},
+            {chinese: "水", pinyin: "shuǐ", audio: ""},
+            {chinese: "茶", pinyin: "chá", audio: ""},
+            {chinese: "米饭", pinyin: "mǐ fàn", audio: ""},
+            {chinese: "水果", pinyin: "shuǐ guǒ", audio: ""},
+            {chinese: "苹果", pinyin: "píng guǒ", audio: ""},
+            {chinese: "红", pinyin: "hóng", audio: ""},
+            {chinese: "白", pinyin: "bái", audio: ""},
+            {chinese: "黑", pinyin: "hēi", audio: ""},
+            {chinese: "大", pinyin: "dà", audio: ""},
+            {chinese: "小", pinyin: "xiǎo", audio: ""},
+            {chinese: "猫", pinyin: "māo", audio: ""},
+            {chinese: "狗", pinyin: "gǒu", audio: ""},
+            {chinese: "书", pinyin: "shū", audio: ""},
+            {chinese: "笔", pinyin: "bǐ", audio: ""},
+            {chinese: "吃", pinyin: "chī", audio: ""},
+            {chinese: "喝", pinyin: "hē", audio: ""},
+            {chinese: "看", pinyin: "kàn", audio: ""},
+            {chinese: "听", pinyin: "tīng", audio: ""},
+            {chinese: "说", pinyin: "shuō", audio: ""},
+            {chinese: "去", pinyin: "qù", audio: ""},
+            {chinese: "来", pinyin: "lái", audio: ""},
+            {chinese: "学习", pinyin: "xué xí", audio: ""},
+            {chinese: "工作", pinyin: "gōng zuò", audio: ""}
+        ];
+
+        // 游戏状态变量
+        let currentRound = 0;
+        let score = 0;
+        let timer = null;
+        let timeLeft = TIME_PER_ROUND;
+        let currentWord = null;
+        let correctPinyin = "";
+        let gameActive = false;
+        let gamePaused = false;
+        let voices = [];
+        let selectedVoice = null;
+        let speechRate = 1;
+        let speechVolume = 1;
+        let gameResults = [];
+        let wrongWords = [];
+        let clickOccurred = false;
+        let usedWords = [];
+
+        // DOM元素引用
+        const welcomePage = document.getElementById('welcome-page');
+        const gamePage = document.getElementById('game-page');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const playBtn = document.getElementById('play-btn');
+        const restartGameBtn = document.getElementById('restart-game-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const backToWelcomeBtn = document.getElementById('back-to-welcome');
+        const roundDisplay = document.getElementById('round-display');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerDisplay = document.getElementById('timer-display');
+        const timeProgress = document.getElementById('time-progress');
+        const bubbleContainer = document.getElementById('bubble-container');
+        const welcomeVoiceSelect = document.getElementById('welcome-voice-select');
+        const welcomeRateControl = document.getElementById('welcome-rate-control');
+        const welcomeVolumeControl = document.getElementById('welcome-volume-control');
+        const welcomeRateValue = document.getElementById('welcome-rate-value');
+        const welcomeVolumeValue = document.getElementById('welcome-volume-value');
+        const gameOverModal = document.getElementById('game-over-modal');
+        const finalScore = document.getElementById('final-score');
+        const resultsList = document.getElementById('results-list');
+        const demoWords = document.querySelectorAll('.demo-word');
+
+        // 初始化函数
+        function init() {
+            startGameBtn.addEventListener('click', startGame);
+            pauseBtn.addEventListener('click', togglePause);
+            playBtn.addEventListener('click', playCurrentWord);
+            restartGameBtn.addEventListener('click', restartGame);
+            restartBtn.addEventListener('click', restartGame);
+            backToWelcomeBtn.addEventListener('click', backToWelcome);
+            
+            welcomeRateControl.addEventListener('input', () => {
+                speechRate = parseFloat(welcomeRateControl.value);
+                welcomeRateValue.textContent = speechRate.toFixed(1);
+            });
+            
+            welcomeVolumeControl.addEventListener('input', () => {
+                speechVolume = parseFloat(welcomeVolumeControl.value);
+                welcomeVolumeValue.textContent = speechVolume.toFixed(1);
+            });
+            
+            demoWords.forEach(word => {
+                word.addEventListener('click', function() {
+                    const wordText = this.getAttribute('data-word');
+                    playText(wordText);
+                });
+            });
+            
+            loadVoices();
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        // 语音处理函数
+        function loadVoices() {
+            voices = speechSynthesis.getVoices();
+            welcomeVoiceSelect.innerHTML = '';
+            
+            const chineseVoices = voices.filter(voice => 
+                voice.lang.startsWith('zh') || voice.lang.includes('Chinese')
+            );
+            
+            if (chineseVoices.length > 0) {
+                chineseVoices.forEach(voice => {
+                    const option = document.createElement('option');
+                    option.value = voice.voiceURI;
+                    option.textContent = `${voice.name} (${voice.lang})`;
+                    welcomeVoiceSelect.appendChild(option);
+                });
+                
+                selectedVoice = chineseVoices[0];
+                welcomeVoiceSelect.value = selectedVoice.voiceURI;
+            } else {
+                const option = document.createElement('option');
+                option.textContent = '未找到中文语音，使用默认语音';
+                welcomeVoiceSelect.appendChild(option);
+                selectedVoice = voices[0] || null;
+            }
+            
+            welcomeVoiceSelect.addEventListener('change', () => {
+                const selected = welcomeVoiceSelect.value;
+                selectedVoice = voices.find(voice => voice.voiceURI === selected) || null;
+            });
+        }
+
+        function playText(text) {
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+            
+            utterance.rate = speechRate;
+            utterance.volume = speechVolume;
+            utterance.lang = 'zh-CN';
+            
+            speechSynthesis.speak(utterance);
+        }
+
+        // 拼音处理函数
+        function getSyllableCount(pinyin) {
+            return pinyin.split(/[\s-]+/).filter(s => s.length > 0).length;
+        }
+
+        function isValidPinyin(pinyin) {
+            const pinyinRegex = /^([bpmfdtnlgkhjqxzcsrzhchshyw]|[bpmfdtnlgkhjqxzcsr]h)?[aāáǎàeēéěèiīíǐìoōóǒòuūúǔùüǖǘǚǜv]((ng|n)?[aāáǎàeēéěèiīíǐìoōóǒòuūúǔùüǖǘǚǜv]?r?)(?:\s+([bpmfdtnlgkhjqxzcsrzhchshyw]|[bpmfdtnlgkhjqxzcsr]h)?[aāáǎàeēéěèiīíǐìoōóǒòuūúǔùüǖǘǚǜv]((ng|n)?[aāáǎàeēéěèiīíǐìoōóǒòuūúǔùüǖǘǚǜv]?r?))*$/i;
+            return pinyinRegex.test(pinyin);
+        }
+
+        // 生成相似拼音干扰项
+        function generateSimilarPinyin(pinyin) {
+            const syllableCount = getSyllableCount(pinyin);
+            const syllables = pinyin.split(/\s+/);
+            const similarPinyins = [];
+            
+            if (syllableCount === 1) {
+                const base = syllables[0];
+                
+                const initials = {
+                    'l': ['n', 'r'], 'n': ['l', 'r'], 'r': ['l', 'n'],
+                    'z': ['c', 's'], 'c': ['z', 's'], 's': ['z', 'c'],
+                    'zh': ['ch', 'sh'], 'ch': ['zh', 'sh'], 'sh': ['zh', 'ch'],
+                    'b': ['p'], 'p': ['b'], 'd': ['t'], 't': ['d'],
+                    'g': ['k'], 'k': ['g'], 'j': ['q', 'x'], 'q': ['j', 'x'], 'x': ['j', 'q']
+                };
+                
+                const finals = {
+                    'a': ['o', 'e'], 'o': ['a', 'e'], 'e': ['a', 'o'],
+                    'i': ['u', 'ü'], 'u': ['i', 'ü'], 'ü': ['i', 'u'],
+                    'ai': ['ei'], 'ei': ['ai'], 'ao': ['ou'], 'ou': ['ao'],
+                    'an': ['ang'], 'ang': ['an'], 'en': ['eng'], 'eng': ['en'],
+                    'in': ['ing'], 'ing': ['in']
+                };
+                
+                const tones = {
+                    'ā': ['á', 'ǎ', 'à'], 'á': ['ā', 'ǎ', 'à'], 'ǎ': ['ā', 'á', 'à'], 'à': ['ā', 'á', 'ǎ'],
+                    'ē': ['é', 'ě', 'è'], 'é': ['ē', 'ě', 'è'], 'ě': ['ē', 'é', 'è'], 'è': ['ē', 'é', 'ě'],
+                    'ī': ['í', 'ǐ', 'ì'], 'í': ['ī', 'ǐ', 'ì'], 'ǐ': ['ī', 'í', 'ì'], 'ì': ['ī', 'í', 'ǐ'],
+                    'ō': ['ó', 'ǒ', 'ò'], 'ó': ['ō', 'ǒ', 'ò'], 'ǒ': ['ō', 'ó', 'ò'], 'ò': ['ō', 'ó', 'ǒ'],
+                    'ū': ['ú', 'ǔ', 'ù'], 'ú': ['ū', 'ǔ', 'ù'], 'ǔ': ['ū', 'ú', 'ù'], 'ù': ['ū', 'ú', 'ǔ'],
+                    'ǖ': ['ǘ', 'ǚ', 'ǜ'], 'ǘ': ['ǖ', 'ǚ', 'ǜ'], 'ǚ': ['ǖ', 'ǘ', 'ǜ'], 'ǜ': ['ǖ', 'ǘ', 'ǚ']
+                };
+                
+                for (let i = 0; i < base.length; i++) {
+                    const char = base[i];
+                    
+                    if (i === 0 && initials[char]) {
+                        for (const replacement of initials[char]) {
+                            const newPinyin = replacement + base.substring(1);
+                            if (isValidPinyin(newPinyin) && newPinyin !== base && !similarPinyins.includes(newPinyin)) {
+                                similarPinyins.push(newPinyin);
+                            }
+                        }
+                    }
+                    
+                    if (i > 0 && finals[char]) {
+                        for (const replacement of finals[char]) {
+                            const newPinyin = base.substring(0, i) + replacement + base.substring(i+1);
+                            if (isValidPinyin(newPinyin) && newPinyin !== base && !similarPinyins.includes(newPinyin)) {
+                                similarPinyins.push(newPinyin);
+                            }
+                        }
+                    }
+                    
+                    if (tones[char]) {
+                        for (const replacement of tones[char]) {
+                            const newPinyin = base.substring(0, i) + replacement + base.substring(i+1);
+                            if (isValidPinyin(newPinyin) && newPinyin !== base && !similarPinyins.includes(newPinyin)) {
+                                similarPinyins.push(newPinyin);
+                            }
+                        }
+                    }
+                }
+            } else if (syllableCount === 2) {
+                const [first, second] = syllables;
+                
+                const firstVariations = generateSimilarPinyin(first);
+                for (const variation of firstVariations) {
+                    const newPinyin = `${variation} ${second}`;
+                    if (isValidPinyin(newPinyin) && !similarPinyins.includes(newPinyin)) {
+                        similarPinyins.push(newPinyin);
+                    }
+                }
+                
+                const secondVariations = generateSimilarPinyin(second);
+                for (const variation of secondVariations) {
+                    const newPinyin = `${first} ${variation}`;
+                    if (isValidPinyin(newPinyin) && !similarPinyins.includes(newPinyin)) {
+                        similarPinyins.push(newPinyin);
+                    }
+                }
+            }
+            
+            return similarPinyins.slice(0, 5);
+        }
+
+        function generateDistractors(correctPinyin, count) {
+            const similarPinyins = generateSimilarPinyin(correctPinyin);
+            const distractors = [];
+            
+            for (let i = 0; i < Math.min(count-1, similarPinyins.length); i++) {
+                distractors.push(similarPinyins[i]);
+            }
+            
+            if (distractors.length < count - 1) {
+                const syllableCount = getSyllableCount(correctPinyin);
+                
+                const singleSyllables = ["mā", "má", "mǎ", "mà", "bā", "bá", "bǎ", "bà", 
+                                        "dā", "dá", "dǎ", "dà", "fā", "fá", "fǎ", "fà",
+                                        "gē", "gé", "gě", "gè", "kē", "ké", "kě", "kè",
+                                        "hē", "hé", "hě", "hè", "jī", "jí", "jǐ", "jì",
+                                        "qī", "qí", "qǐ", "qì", "xī", "xí", "xǐ", "xì",
+                                        "zhī", "zhí", "zhǐ", "zhì", "chī", "chí", "chǐ", "chì",
+                                        "shī", "shí", "shǐ", "shì", "rī", "rí", "rǐ", "rì",
+                                        "zī", "zí", "zǐ", "zì", "cī", "cí", "cǐ", "cì",
+                                        "sī", "sí", "sǐ", "sì", "yī", "yí", "yǐ", "yì",
+                                        "wū", "wú", "wǔ", "wù"];
+                
+                const doubleSyllables = ["mā ma", "bà ba", "gē ge", "dì di", "jiě jie", "mèi mei",
+                                        "nǎi nai", "yé ye", "lǎo shī", "xué sheng", "tóng xué",
+                                        "péng you", "shū shu", "ā yí", "xué xiào", "jiāo shì", 
+                                        "kè běn", "qiān bǐ", "xiàng pí", "zhuō zi", "yǐ zi"];
+                
+                let sourceArray = syllableCount === 1 ? singleSyllables : doubleSyllables;
+                
+                const filteredSource = sourceArray.filter(p => 
+                    p !== correctPinyin && !distractors.includes(p) && !similarPinyins.includes(p) && isValidPinyin(p)
+                );
+                
+                while (distractors.length < count - 1 && filteredSource.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * filteredSource.length);
+                    const distractor = filteredSource.splice(randomIndex, 1)[0];
+                    if (!distractors.includes(distractor)) {
+                        distractors.push(distractor);
+                    }
+                }
+            }
+            
+            while (distractors.length < count - 1) {
+                distractors.push(distractors[0]);
+            }
+            
+            return distractors;
+        }
+
+        // 泡泡相关函数
+        function createBubble(pinyin, isCorrect, index, total) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble normal';
+            bubble.textContent = pinyin;
+            bubble.dataset.correct = isCorrect;
+            
+            const containerWidth = bubbleContainer.offsetWidth;
+            const containerHeight = bubbleContainer.offsetHeight;
+            const bubbleSize = 130;
+            
+            const sectorWidth = containerWidth / total;
+            const left = (sectorWidth * index) + (sectorWidth - bubbleSize) / 2;
+            const top = Math.random() * (containerHeight - bubbleSize - 150) + 100;
+            
+            bubble.style.left = `${left}px`;
+            bubble.style.top = `${top}px`;
+            
+            const duration = Math.random() * (BUBBLE_MAX_DURATION - BUBBLE_MIN_DURATION) + BUBBLE_MIN_DURATION;
+            
+            const maxXMovement = containerWidth * 0.15;
+            const maxYMovement = containerHeight * 0.15;
+            
+            const xMovement = (Math.random() - 0.5) * maxXMovement;
+            const yMovement = (Math.random() - 0.5) * maxYMovement;
+            
+            bubble.style.setProperty('--x-movement', `${xMovement}px`);
+            bubble.style.setProperty('--y-movement', `${yMovement}px`);
+            bubble.style.setProperty('--y-movement-quarter', `${yMovement * 0.25}px`);
+            bubble.style.setProperty('--y-movement-half', `${yMovement * 0.5}px`);
+            bubble.style.setProperty('--y-movement-three-quarters', `${yMovement * 0.75}px`);
+            
+            bubble.style.animation = `float ${duration}s linear infinite`;
+            
+            bubble.addEventListener('click', () => handleBubbleClick(bubble, isCorrect));
+            
+            return bubble;
+        }
+
+        function clearBubbles() {
+            bubbleContainer.innerHTML = '';
+            clickOccurred = false;
+        }
+
+        function createBubbles() {
+            clearBubbles();
+            
+            const bubbleCount = Math.floor(Math.random() * (MAX_BUBBLE_COUNT - MIN_BUBBLE_COUNT + 1)) + MIN_BUBBLE_COUNT;
+            
+            const pinyinOptions = [correctPinyin, ...generateDistractors(correctPinyin, bubbleCount)];
+            
+            for (let i = pinyinOptions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pinyinOptions[i], pinyinOptions[j]] = [pinyinOptions[j], pinyinOptions[i]];
+            }
+            
+            pinyinOptions.forEach((pinyin, index) => {
+                const isCorrect = pinyin === correctPinyin;
+                const bubble = createBubble(pinyin, isCorrect, index, pinyinOptions.length);
+                bubbleContainer.appendChild(bubble);
+            });
+        }
+
+        function handleBubbleClick(bubble, isCorrect) {
+            if (!gameActive || clickOccurred || gamePaused) return;
+            
+            clickOccurred = true;
+            
+            clearInterval(timer);
+            
+            const result = {
+                round: currentRound,
+                word: currentWord.chinese,
+                pinyin: currentWord.pinyin,
+                correctPinyin: correctPinyin,
+                selectedPinyin: bubble.textContent,
+                isCorrect: isCorrect,
+                timeUsed: TIME_PER_ROUND - timeLeft
+            };
+            
+            gameResults.push(result);
+            
+            const allBubbles = document.querySelectorAll('.bubble');
+            allBubbles.forEach(b => {
+                if (b.dataset.correct === 'true') {
+                    b.classList.remove('normal');
+                    b.classList.add('correct');
+                } else {
+                    b.classList.remove('normal');
+                    b.classList.add('incorrect');
+                }
+            });
+            
+            if (isCorrect) {
+                score += POINTS_PER_CORRECT;
+                playCorrectSound();
+                
+                scoreDisplay.textContent = score;
+                
+                setTimeout(nextRound, 1000);
+            } else {
+                playIncorrectSound();
+                wrongWords.push(currentWord);
+                
+                setTimeout(nextRound, 1000);
+            }
+        }
+
+        // 音效函数
+        function playCorrectSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 523.25;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log("音效播放失败:", e);
+            }
+        }
+
+        function playIncorrectSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 220;
+                oscillator.type = 'sawtooth';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log("音效播放失败:", e);
+            }
+        }
+
+        // 游戏流程控制函数
+        function startGame() {
+            welcomePage.style.display = 'none';
+            gamePage.style.display = 'block';
+            
+            gameActive = true;
+            gamePaused = false;
+            currentRound = 0;
+            score = 0;
+            gameResults = [];
+            wrongWords = [];
+            usedWords = [];
+            
+            pauseBtn.textContent = "暂停游戏 ⏸️";
+            
+            scoreDisplay.textContent = score;
+            
+            nextRound();
+        }
+
+        function togglePause() {
+            if (!gameActive) return;
+            
+            gamePaused = !gamePaused;
+            
+            if (gamePaused) {
+                clearInterval(timer);
+                pauseBtn.textContent = "继续游戏 ▶️";
+                speechSynthesis.cancel();
+                
+                const bubbles = document.querySelectorAll('.bubble');
+                bubbles.forEach(bubble => {
+                    bubble.classList.add('hidden');
+                });
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'pause-overlay';
+                overlay.textContent = '游戏暂停 ⏸️';
+                bubbleContainer.appendChild(overlay);
+            } else {
+                startTimer();
+                pauseBtn.textContent = "暂停游戏 ⏸️";
+                
+                const bubbles = document.querySelectorAll('.bubble');
+                bubbles.forEach(bubble => {
+                    bubble.classList.remove('hidden');
+                });
+                
+                const overlay = bubbleContainer.querySelector('.pause-overlay');
+                if (overlay) {
+                    bubbleContainer.removeChild(overlay);
+                }
+            }
+        }
+
+        function nextRound() {
+            currentRound++;
+            
+            if (currentRound > TOTAL_ROUNDS) {
+                endGame();
+                return;
+            }
+            
+            roundDisplay.textContent = `${currentRound}/${TOTAL_ROUNDS}`;
+            timeLeft = TIME_PER_ROUND;
+            timerDisplay.textContent = `${timeLeft}秒`;
+            timeProgress.style.width = '100%';
+            
+            const availableWords = wordLibrary.filter(word => !usedWords.includes(word.chinese));
+            if (availableWords.length === 0) {
+                usedWords = [];
+            }
+            
+            const randomIndex = Math.floor(Math.random() * availableWords.length);
+            currentWord = availableWords[randomIndex];
+            usedWords.push(currentWord.chinese);
+            correctPinyin = currentWord.pinyin;
+            
+            createBubbles();
+            
+            playCurrentWord();
+            setTimeout(playCurrentWord, 1500);
+            
+            startTimer();
+        }
+
+        function playCurrentWord() {
+            if (currentWord && gameActive && !gamePaused) {
+                if (currentWord.audio) {
+                    playText(currentWord.chinese);
+                } else {
+                    const syllableCount = getSyllableCount(correctPinyin);
+                    let textToPlay = currentWord.chinese;
+                    
+                    if (syllableCount === 1) {
+                        textToPlay = textToPlay.charAt(0);
+                    }
+                    
+                    playText(textToPlay);
+                }
+            }
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            
+            timer = setInterval(() => {
+                if (!gamePaused) {
+                    timeLeft--;
+                    timerDisplay.textContent = `${timeLeft}秒`;
+                    timeProgress.style.width = `${(timeLeft / TIME_PER_ROUND) * 100}%`;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        
+                        const result = {
+                            round: currentRound,
+                            word: currentWord.chinese,
+                            pinyin: currentWord.pinyin,
+                            correctPinyin: correctPinyin,
+                            selectedPinyin: "超时",
+                            isCorrect: false,
+                            timeUsed: TIME_PER_ROUND
+                        };
+                        
+                        gameResults.push(result);
+                        wrongWords.push(currentWord);
+                        
+                        setTimeout(nextRound, 1000);
+                    }
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            gameActive = false;
+            gamePaused = false;
+            clearInterval(timer);
+            
+            finalScore.textContent = score;
+            displayResults();
+            gameOverModal.style.display = 'flex';
+        }
+
+        function displayResults() {
+            resultsList.innerHTML = '';
+            
+            gameResults.forEach(result => {
+                const resultItem = document.createElement('div');
+                resultItem.className = `result-item ${result.isCorrect ? 'correct' : 'incorrect'}`;
+                
+                resultItem.innerHTML = `
+                    <div>
+                        <strong>第${result.round}轮:</strong> ${result.word} 
+                        <span class="correct-answer">正确答案: ${result.correctPinyin}</span>
+                    </div>
+                    <div>
+                        选择: ${result.selectedPinyin} | 
+                        ${result.isCorrect ? '正确' : '错误'} | 
+                        用时: ${result.timeUsed}秒
+                    </div>
+                `;
+                
+                resultsList.appendChild(resultItem);
+            });
+        }
+
+        function restartGame() {
+            gameOverModal.style.display = 'none';
+            startGame();
+        }
+
+        function backToWelcome() {
+            gameOverModal.style.display = 'none';
+            gamePage.style.display = 'none';
+            welcomePage.style.display = 'block';
+        }
+
+        // 初始化游戏
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
